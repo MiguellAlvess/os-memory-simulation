@@ -8,33 +8,31 @@ export class BestFit implements AllocationStrategy {
     const requiredSize = process.size
     let bestHoleStartIndex = -1
     let bestHoleSize = Number.MAX_SAFE_INTEGER
-    let currentIndex = 0
-    while (currentIndex < memory.length) {
-      if (memory[currentIndex] === 0) {
-        let holeStartIndex = currentIndex
-        let holeSize = 0
-
-        while (currentIndex < memory.length && memory[currentIndex] === 0) {
-          holeSize++
-          currentIndex++
-        }
-        if (holeSize >= requiredSize && holeSize < bestHoleSize) {
-          bestHoleSize = holeSize
-          bestHoleStartIndex = holeStartIndex
-        }
+    let index = 0
+    while (index < memory.length) {
+      if (memory[index] !== 0) {
+        index++
+        continue
       }
-      currentIndex++
-    }
-    if (bestHoleStartIndex !== -1) {
-      for (
-        let i = bestHoleStartIndex;
-        i < bestHoleStartIndex + requiredSize;
-        i++
-      ) {
-        memory[i] = process.id
+      const holeStartIndex = index
+      let holeSize = 0
+      while (index < memory.length && memory[index] === 0) {
+        holeSize++
+        index++
       }
-      return true
+      if (holeSize >= requiredSize && holeSize < bestHoleSize) {
+        bestHoleSize = holeSize
+        bestHoleStartIndex = holeStartIndex
+      }
     }
-    return false
+    if (bestHoleStartIndex === -1) return false
+    for (
+      let i = bestHoleStartIndex;
+      i < bestHoleStartIndex + requiredSize;
+      i++
+    ) {
+      memory[i] = process.id
+    }
+    return true
   }
 }
