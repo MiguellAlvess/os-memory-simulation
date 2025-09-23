@@ -19,7 +19,6 @@ async function simulate(strategyName: string, strategyInstance: any) {
 
   for (let second = 1; second <= 100; second++) {
     console.log(`\n[${strategyName}] Second ${second}`)
-
     for (let i = 0; i < 2; i++) {
       const proc = generator.generate()
       generatedCount++
@@ -34,18 +33,15 @@ async function simulate(strategyName: string, strategyInstance: any) {
       allocatedCount++
       console.log(`Allocated: ${proc}`)
     }
-
     const removals = 1 + Math.floor(Math.random() * 2)
-    const allocatedPids = manager.getAllocatedPids()
+    const allocatedPids = manager.listAllocatedProcessIds()
     for (let i = 0; i < removals && allocatedPids.length > 0; i++) {
       const index = Math.floor(Math.random() * allocatedPids.length)
       const pid = allocatedPids.splice(index, 1)[0]
-      manager.freeByPid(pid)
+      manager.freeProcessById(pid)
       console.log(`Freed PID: ${pid}`)
     }
-
-    occupancySumPercent += manager.getOccupancyPercent()
-
+    occupancySumPercent += manager.getOccupancyPercentage()
     await sleep(2)
   }
 
