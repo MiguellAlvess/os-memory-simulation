@@ -14,12 +14,17 @@ async function simulate(strategyName: string, strategyInstance: any) {
   let generatedCount = 0
   let allocatedCount = 0
   let discardedCount = 0
+  let processSizeSum = 0
+  let occupancySumPercent = 0
 
   for (let second = 1; second <= 100; second++) {
     console.log(`\n[${strategyName}] Second ${second}`)
+
     for (let i = 0; i < 2; i++) {
       const proc = generator.generate()
       generatedCount++
+      processSizeSum += proc.size
+
       const allocated = manager.allocate(proc)
       if (!allocated) {
         discardedCount++
@@ -39,8 +44,14 @@ async function simulate(strategyName: string, strategyInstance: any) {
       console.log(`Freed PID: ${pid}`)
     }
 
-    await sleep(1000)
+    occupancySumPercent += manager.getOccupancyPercent()
+
+    await sleep(2)
   }
+
+  const meanProcessSize = processSizeSum / generatedCount
+  const meanOccupancyPercent = occupancySumPercent / 100
+  const discardRatePercent = (discardedCount / generatedCount) * 100
 
   console.log(`\n=== ${strategyName} finished ===`)
   console.table([
@@ -48,6 +59,9 @@ async function simulate(strategyName: string, strategyInstance: any) {
       generated: generatedCount,
       allocated: allocatedCount,
       discarded: discardedCount,
+      meanProcessSize: Number(meanProcessSize.toFixed(2)),
+      meanOccupancyPercent: `${meanOccupancyPercent.toFixed(2)}%`,
+      discardRatePercent: `${discardRatePercent.toFixed(2)}%`,
     },
   ])
 }
