@@ -1,3 +1,4 @@
+// src/memory/memory-manager.ts
 import type { Process } from "../process/process.js"
 import type { AllocationStrategy } from "../strategies/allocation-strategy.js"
 
@@ -36,6 +37,11 @@ export class MemoryManager {
       if (cell !== 0) seen.add(cell)
     }
     return [...seen]
+  }
+
+  getOccupancyPercent(): number {
+    const used = this.memoryCells.reduce((acc, c) => acc + (c !== 0 ? 1 : 0), 0)
+    return (used / this.memoryCells.length) * 100
   }
 
   print(): void {
