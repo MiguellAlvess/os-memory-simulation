@@ -42,7 +42,7 @@ async function simulate(strategyName: string, strategyInstance: any) {
       console.log(`Freed PID: ${pid}`)
     }
     occupancySumPercent += manager.getOccupancyPercentage()
-    await sleep(2)
+    await sleep(1000)
   }
 
   const meanProcessSize = processSizeSum / generatedCount
@@ -71,5 +71,4 @@ async function main() {
 
 main().catch((err) => {
   console.error(err)
-  process.exit(1)
 })
